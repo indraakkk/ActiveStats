@@ -19,3 +19,11 @@ jobs:
       - run: pnpm typecheck
       - run: pnpm lint
       - run: pnpm build
+      # auth-worker is intentionally outside the pnpm workspace (different
+      # runtime), so it needs its own install + typecheck step.
+      - name: Install auth-worker deps
+        working-directory: auth-worker
+        run: npm ci
+      - name: Typecheck auth-worker
+        working-directory: auth-worker
+        run: npm run typecheck

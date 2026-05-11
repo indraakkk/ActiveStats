@@ -1,0 +1,13 @@
+name = "strava-oauth-worker"
+main = "src/index.ts"
+compatibility_date = "2025-05-01"
+
+[vars]
+# Comma-separated list of origins permitted to call the worker. Override per
+# environment after deploy via `wrangler secret put` or via the Cloudflare
+# dashboard. For local dev the Vite shell runs on http://localhost:3000.
+ALLOWED_ORIGINS = "http://localhost:3000"
+
+# Secrets (NOT set here — set via `wrangler secret put`):
+#   STRAVA_CLIENT_ID
+#   STRAVA_CLIENT_SECRET

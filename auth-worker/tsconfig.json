@@ -1,0 +1,14 @@
+{
+  "extends": "../tsconfig.base.json",
+  "compilerOptions": {
+    "lib": ["ES2022", "WebWorker"],
+    "types": ["@cloudflare/workers-types"],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "paths": {
+      "@strava-overlay/shared": ["../packages/shared/src/index.ts"]
+    },
+    "noEmit": true
+  },
+  "include": ["src/**/*", "../packages/shared/src/**/*"]
+}

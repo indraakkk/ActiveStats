@@ -1,0 +1,32 @@
+name: Deploy Auth Worker
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'auth-worker/**'
+      - 'packages/shared/src/types/strava.ts'
+      - '.github/workflows/deploy-worker.yml'
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: auth-worker
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm ci
+      - name: Deploy with Wrangler
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: auth-worker
+          # STRAVA_CLIENT_ID / STRAVA_CLIENT_SECRET are set via
+          # `wrangler secret put` once and persist across deploys — do NOT
+          # set them in this workflow (they'd be wiped on every deploy).
