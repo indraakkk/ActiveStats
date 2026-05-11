@@ -1,0 +1,7 @@
+packages:
+  - "apps/*"
+  - "packages/*"
+# NOTE: auth-worker is intentionally NOT a workspace member.
+# It runs on Cloudflare Workers (different runtime), bundles with wrangler
+# (not Vite), and would invite accidental Node-only imports if hoisted.
+# It lives in the repo for type-sharing via tsconfig path, deploys independently.

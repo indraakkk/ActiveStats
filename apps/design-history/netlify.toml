@@ -1,0 +1,9 @@
+[build]
+  base = "apps/design-history"
+  command = "pnpm install --frozen-lockfile && pnpm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "20"
+  NPM_FLAGS = "--version"
+  PNPM_VERSION = "10"

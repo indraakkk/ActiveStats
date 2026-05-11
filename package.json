@@ -1,0 +1,15 @@
+{
+  "name": "strava-overlay-studio",
+  "version": "0.0.0",
+  "private": true,
+  "packageManager": "pnpm@10.33.0",
+  "scripts": {
+    "dev:shell": "pnpm --filter shell dev",
+    "dev:editor": "pnpm --filter overlay-editor dev",
+    "dev:history": "pnpm --filter design-history dev",
+    "dev": "pnpm -r --parallel run dev",
+    "build": "pnpm -r run build",
+    "lint": "pnpm -r run lint",
+    "typecheck": "pnpm -r run typecheck"
+  }
+}
