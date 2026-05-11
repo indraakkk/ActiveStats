@@ -37,12 +37,14 @@ pnpm lint               # eslint across all packages
 
 ## Deploy targets
 
-To be filled in once Netlify sites are provisioned (Phase 1 step 12):
+| App | URL |
+|---|---|
+| Shell | https://strava-overlay-shell.netlify.app/ |
+| Overlay Editor | https://strava-overlay-editor.netlify.app/ |
+| Design History | https://strava-overlay-history.netlify.app/ |
+| Auth worker | _TBD_ (Phase 2) |
 
-- Shell: _TBD_
-- Editor: _TBD_
-- History: _TBD_
-- Auth worker: _TBD_ (Phase 2)
+Phase 1 deploys are manual (Netlify CLI / UI). Phase 8 wires CI-driven, path-filtered GitHub Actions to take over so each app only redeploys when its own code or shared deps change. Workflow files already live in `.github/workflows/` — they'll start firing once merged to `main` and the Netlify secrets are set.
 
 ## Repo layout
 
