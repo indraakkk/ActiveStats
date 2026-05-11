@@ -1,0 +1,42 @@
+name: Deploy Shell
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'apps/shell/**'
+      - 'packages/shared/**'
+      - 'pnpm-lock.yaml'
+      - '.github/workflows/deploy-shell.yml'
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Build shell
+        run: pnpm --filter shell build
+        # Phase 4+ env block (uncomment when Strava OAuth lands):
+        # env:
+        #   VITE_STRAVA_CLIENT_ID: ${{ vars.STRAVA_CLIENT_ID }}
+        #   VITE_OAUTH_WORKER_URL: ${{ vars.OAUTH_WORKER_URL }}
+        #   VITE_REDIRECT_URI: ${{ vars.SHELL_REDIRECT_URI }}
+        #   VITE_OVERLAY_EDITOR_URL: ${{ vars.OVERLAY_EDITOR_URL }}
+        #   VITE_DESIGN_HISTORY_URL: ${{ vars.DESIGN_HISTORY_URL }}
+      - name: Deploy to Netlify
+        uses: nwtgck/actions-netlify@v3
+        with:
+          publish-dir: apps/shell/dist
+          production-deploy: true
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          deploy-message: ${{ github.event.head_commit.message || github.event.head_commit.id || 'Manual dispatch' }}
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SHELL_SITE_ID }}
