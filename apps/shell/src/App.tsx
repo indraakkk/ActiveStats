@@ -1,12 +1,34 @@
+// Shell's top-level router. Three branches, picked by pathname + auth:
+//   /callback?code=...  → Callback (exchange in flight)
+//   isAuthenticated     → ActivityPicker
+//   otherwise           → Login
+//
+// No router library yet — usePathname is a 10-line subscription to
+// popstate. Phase 6 federation will replace this with something richer
+// (sub-routes for /editor, /history) but for Phase 4 plain branching is
+// the right complexity floor.
+import { useEffect, useState } from "react";
+import { useAtomValue } from "@effect-atom/atom-react";
+import { isAuthenticatedAtom } from "./store/session-store";
+import { Login } from "./components/Login";
+import { Callback } from "./components/Callback";
+import { ActivityPicker } from "./components/ActivityPicker";
+
+const usePathname = () => {
+  const [path, setPath] = useState(() => window.location.pathname);
+  useEffect(() => {
+    const onChange = () => setPath(window.location.pathname);
+    window.addEventListener("popstate", onChange);
+    return () => window.removeEventListener("popstate", onChange);
+  }, []);
+  return path;
+};
+
 export default function App() {
-  return (
-    <main className="min-h-screen flex flex-col items-center justify-center bg-neutral-950 text-neutral-50 p-8">
-      <h1 className="text-4xl font-bold tracking-tight">
-        🏔️ Strava Overlay Studio — Shell
-      </h1>
-      <p className="mt-4 text-neutral-400">
-        Phase 1: hello-world deploy. Federation, OAuth, editor land in later phases.
-      </p>
-    </main>
-  );
+  const path = usePathname();
+  const isAuthenticated = useAtomValue(isAuthenticatedAtom);
+
+  if (path === "/callback") return <Callback />;
+  if (!isAuthenticated) return <Login />;
+  return <ActivityPicker />;
 }

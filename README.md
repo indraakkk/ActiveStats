@@ -4,13 +4,15 @@ A browser-based design tool that lets athletes generate Instagram-story-style ov
 
 ## Status
 
-**Phase 3 — Konva editor with lossless PNG export.** Drop a photo, add overlays (text, stat-card, route, divider), drag/resize/rotate them, export as PNG at the photo's native resolution. The export pipeline (`apps/overlay-editor/src/lib/export.ts`) renders to a fresh offscreen Konva stage at native dimensions with `pixelRatio: 1` so overlays stay sharp instead of being upscaled from a small preview. Overlay positions are stored as relative coords (`[0..1]`) so the same set scales to the live preview and the export with no recomputation.
+**Phase 4 — Strava OAuth + activity picker in the shell.** The shell now drives a real OAuth round-trip: `Login` redirects to Strava → callback POSTs `?code=` to the auth worker → `Atom.kvs(sessionStorage)` persists the validated session → `ActivityPicker` renders the user's recent activities. Tokens auto-refresh on 401 via the worker's `/refresh` endpoint, persisting the new session back to the same atom. State is all Atom-based (no `useState` for shared state, no `useEffect` for data fetching) — `activitiesAtom` is a derived effect atom that re-runs when `sessionAtom` changes.
+
+**Phase 3 — Konva editor with lossless PNG export.** Drop a photo, add overlays (text, stat-card, route, divider), drag/resize/rotate them, export as PNG at the photo's native resolution. Offscreen Konva stage at native dimensions with `pixelRatio: 1`; overlay positions are relative `[0..1]` so the same set scales to preview and export with no recomputation.
 
 **Phase 2 — Cloudflare Worker for Strava OAuth.** Worker bundles, typechecks, and is wired into CI. Cloudflare deploy is a one-time manual step (`wrangler login` → `wrangler secret put` → `wrangler deploy`) documented below.
 
 **Phase 1 — Monorepo + three Netlify sites — green.**
 
-Federation, the activity picker, and BYOK design-history land in Phases 4–7 (see `SPEC.md`).
+Federation, real-data overlay templates, and BYOK design-history land in Phases 5–7 (see `SPEC.md`).
 
 ## Apps
 
@@ -51,6 +53,27 @@ pnpm lint               # eslint across all packages
 | Auth worker | _Pending deploy_ — see "Deploying the auth worker" below |
 
 Phase 1 deploys are manual (Netlify CLI / UI). Phase 8 wires CI-driven, path-filtered GitHub Actions to take over so each app only redeploys when its own code or shared deps change. Workflow files already live in `.github/workflows/` — they'll start firing once merged to `main` and the secrets below are set.
+
+## Running the shell locally (Phase 4)
+
+The shell needs three Vite env vars to drive OAuth. Copy the example and fill in your values:
+
+```bash
+cp apps/shell/.env.example apps/shell/.env.local
+# edit apps/shell/.env.local
+```
+
+Required vars:
+
+| Var | Source | Notes |
+|---|---|---|
+| `VITE_STRAVA_CLIENT_ID` | https://strava.com/settings/api → Client ID | Public — appears in the authorize URL |
+| `VITE_OAUTH_WORKER_URL` | `wrangler deploy` output (or `http://localhost:8787` for local worker dev) | Base URL — paths `/exchange` and `/refresh` are appended |
+| `VITE_REDIRECT_URI` | A URL whose host matches your Strava app's Authorization Callback Domain | `http://localhost:3000/callback` for local dev; `https://strava-overlay-shell.netlify.app/callback` for the deployed site |
+
+Then `pnpm dev:shell` and open `http://localhost:3000`. Click **Connect with Strava** → approve → you should land back on the activity picker with your recent activities listed.
+
+`apps/shell/src/lib/env.ts` reads these at module load and throws if any are empty, so a missing var fails loudly at boot instead of mid-OAuth.
 
 ## Deploying the auth worker
 

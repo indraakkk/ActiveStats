@@ -135,9 +135,21 @@ importers:
 
   apps/shell:
     dependencies:
+      '@effect-atom/atom-react':
+        specifier: ^0.5.0
+        version: 0.5.0(@effect/experimental@0.58.0(@effect/platform@0.94.5(effect@3.21.2))(effect@3.21.2))(@effect/platform@0.94.5(effect@3.21.2))(@effect/rpc@0.73.2(@effect/platform@0.94.5(effect@3.21.2))(effect@3.21.2))(effect@3.21.2)(react@18.3.1)(scheduler@0.27.0)
+      '@effect/platform':
+        specifier: ^0.94.5
+        version: 0.94.5(effect@3.21.2)
+      '@effect/platform-browser':
+        specifier: ^0.74.0
+        version: 0.74.0(@effect/platform@0.94.5(effect@3.21.2))(effect@3.21.2)
       '@strava-overlay/shared':
         specifier: workspace:*
         version: link:../../packages/shared
+      effect:
+        specifier: ^3.21.2
+        version: 3.21.2
       react:
         specifier: ^18.3.1
         version: 18.3.1
@@ -310,6 +322,12 @@ packages:
         optional: true
       lmdb:
         optional: true
+
+  '@effect/platform-browser@0.74.0':
+    resolution: {integrity: sha512-PAgkg5L5cASQpScA0SZTSy543MVA4A9kmpVCjo2fCINLRpTeuCFAOQHgPmw8dKHnYS0yGs2TYn7AlrhhqQ5o3g==}
+    peerDependencies:
+      '@effect/platform': ^0.94.0
+      effect: ^3.19.13
 
   '@effect/platform@0.94.5':
     resolution: {integrity: sha512-z05APUiDDPbodhTkH/RJqOLoCU11bU2IZLfcwLFrld03+ob1VeqRnELQlmueLIYm6NZifHAtjl32V+GRt34y4A==}
@@ -1908,6 +1926,12 @@ snapshots:
       '@effect/platform': 0.94.5(effect@3.21.2)
       effect: 3.21.2
       uuid: 11.1.1
+
+  '@effect/platform-browser@0.74.0(@effect/platform@0.94.5(effect@3.21.2))(effect@3.21.2)':
+    dependencies:
+      '@effect/platform': 0.94.5(effect@3.21.2)
+      effect: 3.21.2
+      multipasta: 0.2.7
 
   '@effect/platform@0.94.5(effect@3.21.2)':
     dependencies:

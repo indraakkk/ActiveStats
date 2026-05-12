@@ -11,7 +11,11 @@
     "lint": "eslint src --max-warnings 0"
   },
   "dependencies": {
+    "@effect-atom/atom-react": "^0.5.0",
+    "@effect/platform": "^0.94.5",
+    "@effect/platform-browser": "^0.74.0",
     "@strava-overlay/shared": "workspace:*",
+    "effect": "^3.21.2",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },
