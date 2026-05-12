@@ -28,6 +28,30 @@ Federation, the activity picker, and BYOK design-history land in Phases 4–7 (s
 - **Tailwind CSS v4** per app (no root-level Tailwind)
 - Node 20+ (see `.nvmrc`)
 
+## Local dev with Nix (optional, recommended)
+
+A `flake.nix` pins Node 20, pnpm, and `process-compose` — everyone on the team gets the same toolchain regardless of their host OS or what's in `~/.nvm`.
+
+```bash
+# One-time
+nix develop              # drops you into the shell with everything on PATH
+pnpm install
+cp apps/shell/.env.example apps/shell/.env.local                  # fill in Strava client id, worker URL, redirect URI
+cp auth-worker/.dev.vars.example auth-worker/.dev.vars            # fill in Strava client id + secret for local wrangler dev
+
+# Spin up all four processes (shell + editor + history + worker)
+# in one TUI dashboard:
+process-compose          # from inside `nix develop`
+# or:
+nix run                  # auto-enters the shell and launches process-compose
+```
+
+`process-compose.yaml` wires the three Vite apps (ports 3000/3001/3002) and `wrangler dev` for the auth worker (port 8787). Each process is independent — the Vite apps still start green even if `.dev.vars` is empty, so you can iterate on UI without auth set up.
+
+[direnv](https://direnv.net/) users: an `.envrc` is checked in. Run `direnv allow` once and the shell auto-loads when you `cd` into the repo. Pair with [nix-direnv](https://github.com/nix-community/nix-direnv) for cached, fast reloads.
+
+Don't have Nix? The plain pnpm commands below still work — Nix just removes "what version of Node / pnpm do you have?" as a variable.
+
 ## Common commands
 
 ```bash

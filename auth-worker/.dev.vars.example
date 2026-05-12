@@ -1,0 +1,12 @@
+# Local-dev secrets for `wrangler dev`. These are picked up automatically
+# when you run `npx wrangler dev` from auth-worker/, and they're separate
+# from production secrets (which live in Cloudflare's secret store, set
+# via `wrangler secret put`).
+#
+# Copy this file to auth-worker/.dev.vars (gitignored) and fill in your
+# Strava app's credentials from https://strava.com/settings/api.
+#
+# These match the secret NAMES the worker reads from env.* — do not rename.
+
+STRAVA_CLIENT_ID=
+STRAVA_CLIENT_SECRET=
