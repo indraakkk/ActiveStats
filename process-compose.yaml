@@ -1,0 +1,76 @@
+# process-compose.yaml — local dev orchestrator
+#
+# Runs the three Vite apps and the Cloudflare worker in parallel with a
+# TUI dashboard. Each process is independent (no startup-order deps): if
+# the worker fails to start because .dev.vars is missing, the Vite apps
+# still come up green and you can iterate on UI work without auth.
+#
+# Run via:   process-compose             (from inside `nix develop`)
+# Or:        nix run                     (auto-enters the shell)
+# Stop:      Ctrl-C in the TUI, or `process-compose down`
+#
+# Per-process logs live under .pc-logs/ — gitignored.
+
+version: "0.5"
+
+log_location: .pc-logs/process-compose.log
+log_level: info
+
+processes:
+  shell:
+    command: pnpm --filter shell dev
+    description: "Vite — apps/shell on http://localhost:3000"
+    readiness_probe:
+      http_get:
+        host: 127.0.0.1
+        port: 3000
+        path: /
+      initial_delay_seconds: 2
+      period_seconds: 1
+      timeout_seconds: 2
+      failure_threshold: 60
+    availability:
+      restart: on_failure
+      max_restarts: 3
+
+  editor:
+    command: pnpm --filter overlay-editor dev
+    description: "Vite — apps/overlay-editor on http://localhost:3001"
+    readiness_probe:
+      http_get:
+        host: 127.0.0.1
+        port: 3001
+        path: /
+      initial_delay_seconds: 2
+      period_seconds: 1
+      timeout_seconds: 2
+      failure_threshold: 60
+    availability:
+      restart: on_failure
+      max_restarts: 3
+
+  history:
+    command: pnpm --filter design-history dev
+    description: "Vite — apps/design-history on http://localhost:3002"
+    readiness_probe:
+      http_get:
+        host: 127.0.0.1
+        port: 3002
+        path: /
+      initial_delay_seconds: 2
+      period_seconds: 1
+      timeout_seconds: 2
+      failure_threshold: 60
+    availability:
+      restart: on_failure
+      max_restarts: 3
+
+  worker:
+    command: npx wrangler dev --port 8787
+    working_dir: ./auth-worker
+    description: "Cloudflare Worker — auth-worker on http://localhost:8787"
+    # No HTTP readiness probe: wrangler dev serves 405 on GET / (we only
+    # accept POST). Successful boot is signalled in the worker's logs.
+    availability:
+      restart: on_failure
+      max_restarts: 2
