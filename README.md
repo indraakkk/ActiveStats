@@ -4,9 +4,13 @@ A browser-based design tool that lets athletes generate Instagram-story-style ov
 
 ## Status
 
-**Phase 2 — Cloudflare Worker for Strava OAuth.** Phase 1 (monorepo + three Netlify sites) is green. The auth worker exchanges Strava `code` → tokens (and refreshes them) without putting `client_secret` in the browser. Implementation in `auth-worker/src/index.ts` is Effect-based with tagged errors and Schema-validates Strava's response before forwarding. Worker is built and dry-run bundled successfully; deployment to Cloudflare is a manual step (see below) until Phase 8 wires path-filtered GitHub Actions.
+**Phase 3 — Konva editor with lossless PNG export.** Drop a photo, add overlays (text, stat-card, route, divider), drag/resize/rotate them, export as PNG at the photo's native resolution. The export pipeline (`apps/overlay-editor/src/lib/export.ts`) renders to a fresh offscreen Konva stage at native dimensions with `pixelRatio: 1` so overlays stay sharp instead of being upscaled from a small preview. Overlay positions are stored as relative coords (`[0..1]`) so the same set scales to the live preview and the export with no recomputation.
 
-Federation, the activity picker, and the Konva editor land in Phases 3–7 (see `SPEC.md`).
+**Phase 2 — Cloudflare Worker for Strava OAuth.** Worker bundles, typechecks, and is wired into CI. Cloudflare deploy is a one-time manual step (`wrangler login` → `wrangler secret put` → `wrangler deploy`) documented below.
+
+**Phase 1 — Monorepo + three Netlify sites — green.**
+
+Federation, the activity picker, and BYOK design-history land in Phases 4–7 (see `SPEC.md`).
 
 ## Apps
 
